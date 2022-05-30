@@ -60,6 +60,12 @@ abstract class TcpClient(
         error.printStackTrace()
     }
 
+    /**
+     * Sends a message to the remote host.
+     *
+     * This method will automatically frame the message using the MessagePack protocol.
+     * This method is not asynchronous.
+     */
     final override fun sendMessage(message: ByteArray) {
         outputStream.write(BufferFramer.frame(message).array())
         outputStream.flush()

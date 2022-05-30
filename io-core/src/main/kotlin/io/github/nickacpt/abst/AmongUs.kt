@@ -3,15 +3,13 @@ package io.github.nickacpt.abst
 import io.github.nickacpt.abst.io.sockets.client.TcpClient
 import io.github.nickacpt.abst.io.sockets.server.TcpClientConnection
 import io.github.nickacpt.abst.io.sockets.server.TcpServer
-import kotlin.concurrent.thread
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 
 fun main() {
     val port: UShort = 12301u
     val server = object : TcpServer("localhost", port) {
         override fun handleClientMessage(connection: TcpClientConnection, message: ByteArray) {
             println("Received message from ${connection.remoteAddress}: ${String(message)}")
+            connection.sendMessage(message)
         }
 
         override fun handleClientDisconnect(connection: TcpClientConnection) {
@@ -38,7 +36,7 @@ fun main() {
     }
     println("Connected to server")
 
-    repeat(5) {
+    repeat(10) {
         client.sendMessage("Hello World - $it!".toByteArray())
     }
 
