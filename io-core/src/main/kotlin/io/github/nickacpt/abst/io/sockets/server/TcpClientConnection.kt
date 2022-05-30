@@ -1,6 +1,7 @@
 package io.github.nickacpt.abst.io.sockets.server
 
 import io.github.nickacpt.abst.io.sockets.endpoint.ConnectionEndpoint
+import io.github.nickacpt.abst.io.sockets.endpoint.InternalConnectionEndpoint
 import io.github.nickacpt.abst.io.sockets.getNewClientConnectionThread
 import io.github.nickacpt.abst.io.utils.BufferFramer
 import org.msgpack.core.MessagePack
@@ -13,7 +14,7 @@ import java.net.SocketAddress
 
 data class TcpClientConnection internal constructor(
     val server: TcpServer, val clientSocket: Socket, override val disconnectOnError: Boolean
-) : ConnectionEndpoint {
+) : ConnectionEndpoint, InternalConnectionEndpoint {
     /**
      * The remote address of the client
      */

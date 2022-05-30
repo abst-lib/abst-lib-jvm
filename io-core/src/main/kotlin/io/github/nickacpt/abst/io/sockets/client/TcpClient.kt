@@ -1,6 +1,7 @@
 package io.github.nickacpt.abst.io.sockets.client
 
 import io.github.nickacpt.abst.io.sockets.endpoint.ConnectionEndpoint
+import io.github.nickacpt.abst.io.sockets.endpoint.InternalConnectionEndpoint
 import io.github.nickacpt.abst.io.sockets.getNewClientConnectionThread
 import io.github.nickacpt.abst.io.utils.BufferFramer
 import org.msgpack.core.MessagePack
@@ -22,7 +23,7 @@ import java.net.Socket
  */
 abstract class TcpClient(
     val host: String, val port: UShort, override val disconnectOnError: Boolean = true, private val timeout: Int = 1000
-) : ConnectionEndpoint {
+) : ConnectionEndpoint, InternalConnectionEndpoint {
     private val socket = Socket()
 
     final override val inputStream: InputStream
