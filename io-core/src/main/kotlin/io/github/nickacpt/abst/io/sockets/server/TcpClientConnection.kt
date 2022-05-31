@@ -39,9 +39,9 @@ open class TcpClientConnection(
         connectionThread.start()
     }
 
-    final override fun sendMessage(message: ByteArray) {
+    override fun sendMessage(message: ByteArray) {
         BufferFramer.frame(message).also {
-            outputStream.write(it.array())
+            outputStream.write(it)
             outputStream.flush()
         }
     }
@@ -51,7 +51,7 @@ open class TcpClientConnection(
     }
 
     override fun onConnectionClosed() {
-        server.handleClientDisconnect(this)
+        server.onClientDisconnected(this)
     }
 
     override fun onError(error: Throwable) {

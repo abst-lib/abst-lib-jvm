@@ -41,6 +41,7 @@ abstract class TcpServer<C: TcpClientConnection>(val host: String, val port: USh
      */
     fun stop() {
         isRunning = false
+        clientConnections.forEach { it.disconnect() }
         serverSocket.close()
     }
 
@@ -57,7 +58,7 @@ abstract class TcpServer<C: TcpClientConnection>(val host: String, val port: USh
     /**
      * Handles a client disconnection.
      */
-    abstract fun handleClientDisconnect(connection: C)
+    open fun handleClientDisconnect(connection: C) { }
 
     /**
      * Handles an error that occurred while handling a client connection.
@@ -74,5 +75,10 @@ abstract class TcpServer<C: TcpClientConnection>(val host: String, val port: USh
      * Method to create a new client connection object.
      */
     abstract fun createClientConnection(socket: Socket): C
+
+    internal fun onClientDisconnected(c: C) {
+        clientConnections.remove(c)
+        handleClientDisconnect(c)
+    }
 }
 

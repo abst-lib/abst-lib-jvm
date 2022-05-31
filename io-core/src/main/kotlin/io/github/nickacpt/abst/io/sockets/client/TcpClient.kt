@@ -55,7 +55,8 @@ abstract class TcpClient(
 
     abstract override fun onMessageReceived(message: ByteArray)
 
-    abstract override fun onConnectionClosed()
+    open override fun onConnectionClosed() {
+    }
 
     override fun onError(error: Throwable) {
         error.printStackTrace()
@@ -68,7 +69,8 @@ abstract class TcpClient(
      * This method is not asynchronous.
      */
     final override fun sendMessage(message: ByteArray) {
-        outputStream.write(BufferFramer.frame(message).array())
+        val frame = BufferFramer.frame(message)
+        outputStream.write(frame)
         outputStream.flush()
     }
 }
