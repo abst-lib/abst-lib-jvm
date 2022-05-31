@@ -5,7 +5,8 @@ import org.msgpack.core.MessagePack
 import org.msgpack.core.MessageUnpacker
 import org.msgpack.core.buffer.InputStreamBufferInput
 
-internal class TcpEndpointReceiverThread(private val endpoint: ConnectionEndpoint) : Runnable {
+internal class TcpEndpointReceiverThread<T>(private val endpoint: T) :
+    Runnable where T : ConnectionEndpoint, T : InternalConnectionEndpoint {
 
     private val inputStreamBuffer = InputStreamBufferInput(endpoint.inputStream)
     private val unpacker: MessageUnpacker = MessagePack.newDefaultUnpacker(inputStreamBuffer)

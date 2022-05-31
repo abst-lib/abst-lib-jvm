@@ -19,7 +19,7 @@ internal fun getNewClientConnectionThread(clientConnection: TcpClientConnection)
     }
 }
 
-internal fun getNewServerListenerThread(server: TcpServer): Thread {
+internal fun <C : TcpClientConnection> getNewServerListenerThread(server: TcpServer<C>): Thread {
     return Thread(TcpServerListenerThread(server)).also {
         it.name = "abst-lib - Server Connection Listener Thread ${server.host}:${server.port}"
     }

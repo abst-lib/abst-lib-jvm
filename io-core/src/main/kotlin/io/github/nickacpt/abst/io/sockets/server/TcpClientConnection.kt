@@ -12,8 +12,8 @@ import java.io.OutputStream
 import java.net.Socket
 import java.net.SocketAddress
 
-data class TcpClientConnection internal constructor(
-    val server: TcpServer, val clientSocket: Socket, override val disconnectOnError: Boolean
+open class TcpClientConnection(
+    val server: TcpServer<in TcpClientConnection>, internal val clientSocket: Socket, override val disconnectOnError: Boolean
 ) : ConnectionEndpoint, InternalConnectionEndpoint {
     /**
      * The remote address of the client
@@ -22,24 +22,24 @@ data class TcpClientConnection internal constructor(
 
     private val connectionThread = getNewClientConnectionThread(this)
 
+    final override val isConnected: Boolean
+        get() = clientSocket.isConnected && !clientSocket.isClosed
+
+    final override val inputStream: InputStream
+        get() = clientSocket.getInputStream()
+
+    final override val outputStream: OutputStream
+        get() = clientSocket.getOutputStream()
+
+    final override val messagePacker: MessagePacker = MessagePack.newDefaultPacker(outputStream)
+
+    final override val messageUnpacker: MessageUnpacker = MessagePack.newDefaultUnpacker(inputStream)
+
     internal fun startReceiving() {
         connectionThread.start()
     }
 
-    override val isConnected: Boolean
-        get() = clientSocket.isConnected && !clientSocket.isClosed
-
-    override val inputStream: InputStream
-        get() = clientSocket.getInputStream()
-
-    override val outputStream: OutputStream
-        get() = clientSocket.getOutputStream()
-
-    override val messagePacker: MessagePacker = MessagePack.newDefaultPacker(outputStream)
-
-    override val messageUnpacker: MessageUnpacker = MessagePack.newDefaultUnpacker(inputStream)
-
-    override fun sendMessage(message: ByteArray) {
+    final override fun sendMessage(message: ByteArray) {
         BufferFramer.frame(message).also {
             outputStream.write(it.array())
             outputStream.flush()
@@ -58,7 +58,7 @@ data class TcpClientConnection internal constructor(
         server.handleClientError(this, error)
     }
 
-    override fun disconnect() {
+    final override fun disconnect() {
         clientSocket.close()
     }
 

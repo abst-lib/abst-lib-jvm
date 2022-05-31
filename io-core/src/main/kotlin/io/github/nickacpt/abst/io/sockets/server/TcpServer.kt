@@ -3,6 +3,7 @@ package io.github.nickacpt.abst.io.sockets.server
 import io.github.nickacpt.abst.io.sockets.getNewServerListenerThread
 import java.net.InetAddress
 import java.net.ServerSocket
+import java.net.Socket
 
 /**
  * Abstract class for creating and managing a server socket
@@ -11,14 +12,14 @@ import java.net.ServerSocket
  * @param host The host to bind to.
  * @param port The port to bind to.
  */
-abstract class TcpServer(val host: String, val port: UShort, val disconnectOnError: Boolean = true) {
+abstract class TcpServer<C: TcpClientConnection>(val host: String, val port: UShort, val disconnectOnError: Boolean = true) {
     internal val serverSocket = ServerSocket(port.toInt(), 50, InetAddress.getByName(host))
-    private val clientConnections = mutableListOf<TcpClientConnection>()
+    private val clientConnections = mutableListOf<C>()
 
     /**
      * Immutable list of all the clients currently connected to the server.
      */
-    val clients: List<TcpClientConnection>
+    val clients: List<C>
         get() = clientConnections
 
     /**
@@ -43,7 +44,7 @@ abstract class TcpServer(val host: String, val port: UShort, val disconnectOnErr
         serverSocket.close()
     }
 
-    internal fun handleClientConnection(connection: TcpClientConnection) {
+    internal fun handleClientConnection(connection: C) {
         clientConnections.add(connection)
         connection.startReceiving()
     }
@@ -51,22 +52,27 @@ abstract class TcpServer(val host: String, val port: UShort, val disconnectOnErr
     /**
      * Handles a message received from a client.
      */
-    abstract fun handleClientMessage(connection: TcpClientConnection, message: ByteArray)
+    abstract fun handleClientMessage(connection: C, message: ByteArray)
 
     /**
      * Handles a client disconnection.
      */
-    abstract fun handleClientDisconnect(connection: TcpClientConnection)
+    abstract fun handleClientDisconnect(connection: C)
 
     /**
      * Handles an error that occurred while handling a client connection.
      */
-    open fun handleClientError(connection: TcpClientConnection, error: Throwable) {
+    open fun handleClientError(connection: C, error: Throwable) {
         error.printStackTrace()
     }
 
     open fun onError(e: Exception) {
         e.printStackTrace()
     }
+
+    /**
+     * Method to create a new client connection object.
+     */
+    abstract fun createClientConnection(socket: Socket): C
 }
 
