@@ -6,5 +6,5 @@ plugins {
 val msgpackVersion: String by rootProject
 
 dependencies {
-    implementation("org.msgpack:msgpack-core:$msgpackVersion")
+    api("org.msgpack:msgpack-core:$msgpackVersion")
 }
