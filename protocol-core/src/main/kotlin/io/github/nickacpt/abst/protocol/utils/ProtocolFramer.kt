@@ -19,7 +19,7 @@ object ProtocolFramer {
      */
     fun frame(protocol: Layer7Protocol, bytes: ByteArray): ByteArray {
         return MessagePack.newDefaultBufferPacker().use {
-            it.packByte(protocol.id.toByte()) // Protocol number
+            it.packByte(protocol.id) // Protocol number
             it.packBinaryHeader(bytes.size)
             it.addPayload(bytes)
             it.toByteArray()
@@ -33,7 +33,7 @@ object ProtocolFramer {
      * @param buffer The message buffer to unframe.
      * @return The unframed message as a byte array.
      */
-    fun unframe(buffer: MessageBuffer): Pair<UByte, ByteArray> {
+    fun unframe(buffer: MessageBuffer): Pair<Byte, ByteArray> {
         return unframeMessage(MessagePack.newDefaultUnpacker(buffer.sliceAsByteBuffer()))
     }
 
@@ -43,9 +43,9 @@ object ProtocolFramer {
      * @param unpacker The message unpacker to use to read the message.
      * @return The unframed message as a byte array.
      */
-    fun unframeMessage(unpacker: MessageUnpacker, canClose: Boolean = true): Pair<UByte, ByteArray> {
-        val action: (MessageUnpacker) -> Pair<UByte, ByteArray> = {
-            val protocolId = it.unpackByte().toUByte()
+    fun unframeMessage(unpacker: MessageUnpacker, canClose: Boolean = true): Pair<Byte, ByteArray> {
+        val action: (MessageUnpacker) -> Pair<Byte, ByteArray> = {
+            val protocolId = it.unpackByte()
             val header = it.unpackBinaryHeader()
             protocolId to it.readPayload(header)
         }

@@ -9,7 +9,7 @@ interface Layer7Protocol {
      * The id of the protocol.
      * This is used to identify the protocol at the layer 7
      */
-    val id: UByte
+    val id: Byte
 
     /**
      * The friendly name of the protocol.
