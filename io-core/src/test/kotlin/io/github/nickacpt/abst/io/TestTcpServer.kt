@@ -6,7 +6,7 @@ import java.net.Socket
 import kotlin.test.assertContentEquals
 import kotlin.test.fail
 
-class TestTcpServer(private val expectedClients: Int, private val expectedMessages: MutableList<ByteArray>) :
+open class TestTcpServer(private val expectedClients: Int, private val expectedMessages: MutableList<ByteArray>) :
     TcpServer<TcpClientConnection>("localhost", 0u, true) {
 
     var clientCount = 0
@@ -44,6 +44,12 @@ class TestTcpServer(private val expectedClients: Int, private val expectedMessag
         clientCount--
         if (clientCount < 0) {
             fail("Too many clients disconnected")
+        }
+    }
+
+    fun waitForExpectedMessages() {
+        while (expectedMessages.isNotEmpty()) {
+            Thread.sleep(10)
         }
     }
 }

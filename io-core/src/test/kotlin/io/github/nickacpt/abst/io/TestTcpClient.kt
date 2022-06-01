@@ -14,4 +14,17 @@ class TestTcpClient(server: TestTcpServer, private val expectedMessages: Mutable
 
         assertContentEquals(expectedMessage, message)
     }
+
+    override fun disconnect() {
+        super.disconnect()
+        if (expectedMessages.isNotEmpty()) {
+            fail("Expected messages not received")
+        }
+    }
+
+    fun waitForExpectedMessages() {
+        while (expectedMessages.isNotEmpty()) {
+            Thread.sleep(10)
+        }
+    }
 }
