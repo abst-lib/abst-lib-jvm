@@ -5,4 +5,10 @@ plugins {
 
 dependencies {
     api(project(":io-core"))
+
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

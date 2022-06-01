@@ -3,6 +3,7 @@ package io.github.nickacpt.abst.protocol.endpoints.client
 import io.github.nickacpt.abst.io.sockets.client.TcpClient
 import io.github.nickacpt.abst.protocol.Layer7Protocol
 import io.github.nickacpt.abst.protocol.ProtocolManager
+import io.github.nickacpt.abst.protocol.endpoints.ProtocolAwareConnectionEndpoint
 import io.github.nickacpt.abst.protocol.utils.ProtocolFramer
 import org.msgpack.core.buffer.MessageBuffer
 
@@ -11,7 +12,7 @@ abstract class ProtocolTcpClient(
     port: UShort,
     disconnectOnError: Boolean,
     timeout: Int = 1000
-) : TcpClient(host, port, disconnectOnError = disconnectOnError, timeout = timeout) {
+) : TcpClient(host, port, disconnectOnError = disconnectOnError, timeout = timeout), ProtocolAwareConnectionEndpoint {
 
     abstract fun onMessageReceived(protocol: Layer7Protocol, message: ByteArray)
 
@@ -21,7 +22,7 @@ abstract class ProtocolTcpClient(
      * This method will automatically frame the message using the MessagePack protocol.
      * This method is not asynchronous.
      */
-    fun sendMessage(protocol: Layer7Protocol, message: ByteArray) {
+    override fun sendMessage(protocol: Layer7Protocol, message: ByteArray) {
         sendMessage(ProtocolFramer.frame(protocol, message))
     }
 
@@ -30,5 +31,6 @@ abstract class ProtocolTcpClient(
         val protocol = ProtocolManager.getProtocolByIdOrThrow(protocolId)
 
         onMessageReceived(protocol, framedMessage)
+        protocol.handleMessage(framedMessage, this)
     }
 }

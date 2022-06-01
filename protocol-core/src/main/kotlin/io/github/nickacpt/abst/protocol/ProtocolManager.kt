@@ -5,24 +5,26 @@ package io.github.nickacpt.abst.protocol
  */
 object ProtocolManager {
 
-    private val protocols = mutableMapOf<Byte, Layer7Protocol>()
+    private val protocolMap = mutableMapOf<Byte, Layer7Protocol>()
+
+    val protocols: Collection<Layer7Protocol> get() = protocolMap.values
 
     /**
      * Register layer 7 protocol
      */
     fun registerProtocol(protocol: Layer7Protocol) {
-        protocols[protocol.id] = protocol
+        protocolMap[protocol.id] = protocol
     }
 
     /**
      * Get layer 7 protocol by id
      */
     fun getProtocolById(id: Byte): Layer7Protocol? {
-        return protocols[id]
+        return protocolMap[id]
     }
 
     fun getProtocolByIdOrThrow(id: Byte): Layer7Protocol {
-        return protocols[id] ?: throw IllegalArgumentException("No protocol with id $id")
+        return protocolMap[id] ?: throw IllegalArgumentException("No protocol with id $id")
     }
 
 }

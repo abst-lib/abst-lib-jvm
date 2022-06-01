@@ -18,5 +18,6 @@ abstract class ProtocolTcpServer<C : ProtocolTcpClientConnection>(host: String, 
         val protocol = ProtocolManager.getProtocolByIdOrThrow(protocolId)
 
         handleClientMessage(connection, protocol, framedMessage)
+        protocol.handleMessage(framedMessage, connection)
     }
 }
